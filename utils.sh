@@ -28,7 +28,27 @@ UNDERLINE="\e[4m"
 INVERT="\e[7m"
 HIDDEN="\e[8m"
 
-#-----
+#-- LOG SERVICE
+
+# Función para imprimir log con colores
+log_() {
+    local message=$1
+    local color=$2
+    echo -e -n "${YELLOW}[LOG]: ${RESET}"
+    echo -e "${color}${message}${RESET}"
+}
+
+# Función para imprimir log con timestamp
+log_w() {
+    local message=$1
+    local color=$2
+    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    echo -e -n "${YELLOW}[LOG]: ${RESET}"
+    echo -e "${color}[${timestamp}] ${message}${RESET}"
+}
+
+
+#-- START SERVICE
 
 # Función para iniciar servicios
 start() {
