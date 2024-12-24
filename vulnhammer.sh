@@ -49,4 +49,70 @@ function vulnhammer {
         echo "Análisis de SSH completado."
     }
 
+    # Subfunción para configurar la seguridad de SSH
+    configure_security() {
+        echo "Configurando seguridad de SSH..."
+
+        # Deshabilitar el acceso root en SSH
+        sed -i 's/^PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
+        echo "[OK]: Acceso root deshabilitado en SSH."
+
+        # Habilitar solo SSH v2
+        sed -i 's/^Protocol 1/Protocol 2/' /etc/ssh/sshd_config
+        echo "[OK]: Protocolo SSH v2 habilitado."
+
+        # Restringir permisos del archivo de configuración
+        chmod 600 /etc/ssh/sshd_config
+        echo "[OK]: Permisos del archivo /etc/ssh/sshd_config configurados."
+
+        # Reiniciar SSH para aplicar los cambios
+        systemctl restart sshd
+        echo "[OK]: Servicio SSH reiniciado con la nueva configuración."
+    }
+
+    # Subfunción para configurar el firewall
+    configure_firewall() {
+        echo "Configurando firewall..."
+
+        # Asegurarse de que UFW esté instalado
+        if ! command -v ufw &> /dev/null; then
+            echo "[ERR]: UFW no está instalado. Instalando..."
+            apt-get install -y ufw
+        fi
+
+        # Habilitar reglas básicas del firewall para SSH
+        ufw allow OpenSSH
+        ufw enable
+        echo "[OK]: Firewall configurado para permitir SSH."
+
+        # Asegurarse de que el firewall esté activo
+        ufw status verbose
+    }
+
+    # Subfunción para configurar Fail2Ban
+    configure_fail2ban() {
+        echo "Configurando Fail2Ban..."
+
+        # Asegurarse de que Fail2Ban esté instalado
+        if ! command -v fail2ban-client &> /dev/null; then
+            echo "[ERR]: Fail2Ban no está instalado. Instalando..."
+            apt-get install -y fail2ban
+        fi
+
+        # Reiniciar Fail2Ban para aplicar cualquier configuración
+        systemctl restart fail2ban
+        echo "[OK]: Fail2Ban configurado y reiniciado."
+
+        # Verificar el estado de Fail2Ban
+        fail2ban-client status sshd
+    }
+
+    # Si se pasa el flag -crt, ejecutar la configuración adicional
+    if [[ "$1" == "-crt" ]]; then
+        configure_security
+        configure_firewall
+        configure_fail2ban
+    else
+        vssh
+    fi
 }
