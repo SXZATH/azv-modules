@@ -1,0 +1,29 @@
+math_sum() {
+
+    expr $1 + $2
+
+}
+
+math_x() {
+
+    expr $1 \* $2
+
+}
+
+math_div() {
+
+    expr $1 % $2
+
+}
+
+math_rest() {
+
+    expr $1 - $2
+
+}
+
+math_div_residual() {
+
+    expr $1 % $2
+
+}
