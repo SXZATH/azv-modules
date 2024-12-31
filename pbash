@@ -1,0 +1,13 @@
+# BETA OF PBASH, SEMI-FRAMEWORK IN DEVELOPING.
+
+
+# RWK
+
+rwk() {
+
+   local var_name=$1
+   local var_value=$2
+
+   eval "$var_name=\"$var_value""
+
+}
